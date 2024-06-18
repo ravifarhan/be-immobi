@@ -12,7 +12,10 @@ exports.createPosition = async (req, res) => {
 exports.getPositions = async (req, res) => {
   try {
     const positions = await Position.findAll({
-      include: Department,
+      include: {
+        model: Department,
+        attributes: ["department_name"],
+      }
     });
     res.status(200).json(positions);
   } catch (error) {
@@ -23,7 +26,10 @@ exports.getPositions = async (req, res) => {
 exports.getPositionById = async (req, res) => {
   try {
     const position = await Position.findByPk(req.params.id, {
-      include: Department,
+      include: {
+        model: Department,
+        attributes: ["department_name"],
+      }
     });
     if (!position) {
       return res.status(404).json({ error: "Position not found" });
@@ -57,7 +63,7 @@ exports.deletePosition = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: "Position not found" });
     }
-    res.status(204).json();
+    res.json({ message: `Position ${req.params.id} deleted` });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

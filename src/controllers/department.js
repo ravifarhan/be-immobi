@@ -14,7 +14,8 @@ exports.getDepartments = async (req, res) => {
     const departments = await Department.findAll();
     res.status(200).json(departments);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: "Failed to get data departments" });
   }
 };
 
@@ -35,6 +36,7 @@ exports.updateDepartment = async (req, res) => {
     const [updated] = await Department.update(req.body, {
       where: { id: req.params.id },
     });
+
     if (!updated) {
       return res.status(404).json({ error: "Department not found" });
     }
@@ -53,7 +55,7 @@ exports.deleteDepartment = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: "Department not found" });
     }
-    res.status(204).json();
+    res.json({message: `Department ${req.params.id} deleted`});
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
