@@ -14,10 +14,24 @@ exports.getEmployees = async (req, res) => {
     const employees = await Employee.findAll({
       include: {
         model: Position,
-        attributes: ["id_department", "position_name"],
+        attributes: ["position_name"],
       },
+      order: ["id"],  
     });
-    res.status(200).json(employees);
+
+    const formattedPositions = employees.map((employee) => ({
+      id: employee.id,
+      name: employee.name,
+      id_position: employee.id_position,
+      position_name: employee.Position.position_name,
+      age: employee.age,
+      gender: employee.gender,
+      birth_date: employee.birth_date,
+      address: employee.address,
+    }));
+
+    res.status(200).json(formattedPositions);
+    // res.status(200).json(employees);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

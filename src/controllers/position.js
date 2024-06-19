@@ -15,9 +15,20 @@ exports.getPositions = async (req, res) => {
       include: {
         model: Department,
         attributes: ["department_name"],
-      }
+      },
     });
-    res.status(200).json(positions);
+
+    const formattedPositions = positions.map((position) => ({
+      id: position.id,
+      id_department: position.id_department,
+      position_name: position.position_name,
+      department_name: position.Department
+        ? position.Department.department_name
+        : "Tidak ada departemen",
+    }));
+
+    res.status(200).json(formattedPositions);
+    // res.status(200).json(positions);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -29,12 +40,28 @@ exports.getPositionById = async (req, res) => {
       include: {
         model: Department,
         attributes: ["department_name"],
-      }
+      },
     });
     if (!position) {
       return res.status(404).json({ error: "Position not found" });
     }
     res.status(200).json(position);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.getPositionByDepartment = async (req, res) => {
+  const { departmentId } = req.params;
+  try {
+    const positions = await Position.findAll({
+      where: { id_department: departmentId },
+      include: {
+        model: Department,
+        attributes: ["department_name"],
+      },
+    });
+    res.status(200).json(positions);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
